@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Travel Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input, button {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        button {
+            background: #0984e3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0767b2;
+        }
+
+        .itinerary {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .day-plan {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 2rem 0;
+        }
+
+        .budget-breakdown {
+            background: #fff9e6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Travel Planner ✈️</h1>
+        
+        <div class="input-section">
+            <input type="text" id="destination" placeholder="Enter destination...">
+            <input type="number" id="budget" placeholder="Total budget ($)">
+            <button onclick="generatePlan()">Generate Plan</button>
+        </div>
+
+        <div class="loading">⏳ AI is crafting your perfect itinerary...</div>
+        <div class="error" id="error-message"></div>
+
+        <div class="itinerary" id="itinerary">
+            <!-- AI-generated content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Mock AI Response (Replace with actual API call)
+        function mockAIResponse(destination, budget) {
+            const samplePlans = {
+                'Paris': {
+                    days: [
+                        {   
+                            day: 1,
+                            activities: [
+                                "Morning: Eiffel Tower visit",
+                                "Lunch: Traditional French cuisine",
+                                "Afternoon: Louvre Museum tour",
+                                "Evening: Seine River cruise"
+                            ]
+                        },
+                        // Add more days...
+                    ],
+                    budgetBreakdown: {
+                        accommodation: budget * 0.4,
+                        food: budget * 0.3,
+                        activities: budget * 0.2,
+                        transportation: budget * 0.1
+                    }
+                },
+                // Add more destinations...
+            };
+
+            return samplePlans[destination] || {
+                days: [{
+                    day: 1,
+                    activities: [
+                        "Customized AI-generated activities based on destination",
+                        "Local cultural experiences",
+                        "Optimized budget allocation"
+                    ]
+                }],
+                budgetBreakdown: {
+                    accommodation: budget * 0.5,
+                    food: budget * 0.3,
+                    activities: budget * 0.15,
+                    transportation: budget * 0.05
+                }
+            };
+        }
+
+        function generatePlan() {
+            const destination = document.getElementById('destination').value;
+            const budget = parseFloat(document.getElementById('budget').value);
+            const loading = document.querySelector('.loading');
+            const error = document.getElementById('error-message');
+            const itinerary = document.getElementById('itinerary');
+
+            // Reset UI
+            error.style.display = 'none';
+            itinerary.style.display = 'none';
+            
+            // Validation
+            if (!destination || !budget) {
+                error.textContent = "Please fill in all fields!";
+                error.style.display = 'block';
+                return;
+            }
+
+            if (budget < 100) {
+                error.textContent = "Budget should be at least $100";
+                error.style.display = 'block';
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+
+            // Simulate AI processing
+            setTimeout(() => {
+                const plan = mockAIResponse(destination, budget);
+                loading.style.display = 'none';
+                renderItinerary(plan);
+                itinerary.style.display = 'block';
+            }, 1500);
+        }
+
+        function renderItinerary(plan) {
+            const itineraryDiv = document.getElementById('itinerary');
+            let html = '<h2>Your AI-Generated Itinerary</h2>';
+
+            // Add days
+            plan.days.forEach(day => {
+                html += `
+                    <div class="day-plan">
+                        <h3>Day ${day.day}</h3>
+                        <ul>
+                            ${day.activities.map(activity => `<li>${activity}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+
+            // Add budget breakdown
+            html += `
+                <div class="budget-breakdown">
+                    <h3>Budget Breakdown</h3>
+                    <p>🏨 Accommodation: $${plan.budgetBreakdown.accommodation.toFixed(2)}</p>
+                    <p>🍴 Food: $${plan.budgetBreakdown.food.toFixed(2)}</p>
+                    <p>🎡 Activities: $${plan.budgetBreakdown.activities.toFixed(2)}</p>
+                    <p>🚗 Transportation: $${plan.budgetBreakdown.transportation.toFixed(2)}</p>
+                </div>
+            `;
+
+            itineraryDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

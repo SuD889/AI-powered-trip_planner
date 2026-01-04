@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelEase - Plan Your Perfect Trip</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@0.344.0"></script>
+</head>
+<body>
+    <div class="min-h-screen bg-gradient">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i data-lucide="plane"></i>
+                        <span>  AI TRIP PLANNER</span>
+                    </div>
+                    <!-- Update the navigation link -->
+                    <nav class="nav">
+                        <a href="#destinations">Destinations</a>
+                        <a href="#plan-trip">Plan Trip</a>
+                        <a href="ai-assistant/index.html">AI Assistant</a>
+                        <a href="#">About</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <section class="container main-content">
+            <!-- AI Trip Planner -->
+            <div class="card ai-planner">
+                <h2 class="card-title">
+                    <i data-lucide="bot"></i>
+                    AI Trip Planner
+                </h2>
+                <p>Let our AI assistant create the perfect itinerary for you!</p>
+                <div class="ai-input">
+                    <textarea id="aiPrompt" placeholder="Describe your dream vacation..." rows="3"></textarea>
+                    <button class="btn btn-white" onclick="getAIResponse()">
+                        Generate Itinerary
+                        <i data-lucide="sparkles"></i>
+                    </button>
+                </div>
+                <div class="loading" id="loading">
+                    <i data-lucide="loader"></i>
+                    Thinking...
+                </div>
+                <div class="response-area" id="aiResponse">
+                    <!-- AI responses will appear here -->
+                </div>
+            </div>
+
+            <!-- Trip Planning Section -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i data-lucide="calendar"></i>
+                    Plan Your Trip
+                </h2>
+                <div class="trip-form">
+                    <div class="form-group">
+                        <label>Where to?</label>
+                        <div class="input-icon">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="destination" placeholder="Enter destination">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>When?</label>
+                        <div class="input-icon">
+                            <i data-lucide="calendar"></i>
+                            <input type="text" id="dates" placeholder="Select dates" readonly>
+                        </div>
+                        <div id="calendar" class="calendar-popup hidden"></div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Trip Description</label>
+                        <textarea id="tripDescription" rows="3" placeholder="Describe your trip plans..."></textarea>
+                        <button id="saveTrip" class="btn btn-primary">Save Trip</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Trips -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i data-lucide="bookmark"></i>
+                    Saved Trips
+                </h2>
+                <div id="savedTrips" class="saved-trips">
+                    <div class="no-trips">No trips saved yet. Plan your first adventure above!</div>
+                </div>
+            </div>
+
+            <style>
+                .ai-response {
+                    background: #ffffff;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 1.5rem;
+                    text-align: left;
+                    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                    line-height: 1.5;
+                }
+                
+                .ai-response h2 {
+                    color: #2d3748;
+                    font-size: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    font-weight: 600;
+                    text-align: center;
+                }
+                
+                .ai-response h3 {
+                    color: #4a5568;
+                    font-size: 1.2rem;
+                    margin: 1.2rem 0 0.8rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 2px solid var(--primary-light);
+                }
+                
+                .ai-response p {
+                    color: #4a5568;
+                    font-size: 1rem;
+                    margin-bottom: 0.8rem;
+                }
+                
+                .ai-response .cost {
+                    color: #2c5282;
+                    font-weight: 500;
+                    font-size: 1rem;
+                    margin: 0.6rem 0;
+                    padding: 0.6rem 1rem;
+                    background: #ebf8ff;
+                    border-radius: 6px;
+                    display: inline-block;
+                }
+                
+                .ai-response strong {
+                    color: #2d3748;
+                    font-weight: 600;
+                }
+                
+                .error {
+                    color: #e53e3e;
+                    padding: 1rem;
+                    background: #fff5f5;
+                    border-radius: 8px;
+                    text-align: center;
+                }
+            </style>
+
+            <script>
+                let isProcessing = false;
+            
+                async function getAIResponse() {
+                    if (isProcessing) return;
+                    
+                    const userInput = document.getElementById('aiPrompt').value.trim();
+                    const loading = document.getElementById('loading');
+                    const responseArea = document.getElementById('aiResponse');
+            
+                    if (!userInput) {
+                        alert('Please describe your trip');
+                        return;
+                    }
+            
+                    isProcessing = true;
+                    loading.style.display = 'block';
+                    responseArea.innerHTML = '';
+            
+                    try {
+                        const response = await fetch('https://api.together.xyz/inference', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer 5cf7e32b5168fa5537fd5ff73d87048e099aaee9f5892361ee27e20e9ed8c83f'
+                            },
+                            body: JSON.stringify({
+                                model: "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+                                prompt: `Create a detailed travel itinerary for ${userInput}. Include daily activities, recommended places, and estimated costs.`,
+                                max_tokens: 1000,
+                                temperature: 0.7
+                            })
+                        });
+
+                        const data = await response.json();
+                        console.log('Response Data:', data); // Debug log
+                        
+                        if (data.output && data.output.choices && data.output.choices[0].text) {
+                            const rawText = data.output.choices[0].text;
+                            
+                            // Format the text for better presentation
+                            const formattedText = rawText
+                                .split('Day')
+                                .filter(text => text.trim())
+                                .map(day => {
+                                    const dayContent = day.trim();
+                                    return `<h3>Day ${dayContent}</h3>`;
+                                })
+                                .join('')
+                                .replace(/\(estimated cost: (.*?)\)/g, '<p class="cost">Estimated Cost: $1</p>')
+                                .replace(/([^.]*?):([^.]*\.)/g, '<strong>$1:</strong>$2<br>')
+                                .replace(/\n/g, '<br>');
+                            
+                            responseArea.innerHTML = `
+                                <div class="ai-response">
+                                    <h2>Your Travel Itinerary</h2>
+                                    ${formattedText}
+                                </div>`;
+                        } else {
+                            throw new Error('Invalid response format');
+                        }
+                    } catch (error) {
+                        console.error('API Error:', error);
+                        responseArea.innerHTML = `<div class="error">Failed to generate travel plan. Please try again.</div>`;
+                    } finally {
+                        isProcessing = false;
+                        loading.style.display = 'none';
+                    }
+                }
+            
+            </script>
+            <!-- Popular Destinations -->
+            <!-- Add id to the Popular Destinations section -->
+            <div class="card" id="destinations">
+                <h2 class="card-title">
+                    <i data-lucide="trending-up"></i>
+                    Popular Destinations
+                </h2>
+                <div class="destinations-grid">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80" alt="Taj Mahal">
+                        <div class="destination-info">
+                            <h3>Taj Mahal, Agra</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.9</span>
+                                <a href="destinations/taj-mahal.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80" alt="Darjeeling">
+                        <div class="destination-info">
+                            <h3>Darjeeling</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.7</span>
+                                <a href="destinations/darjeeling.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80" alt="Mumbai">
+                        <div class="destination-info">
+                            <h3>Mumbai</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.8</span>
+                                <a href="destinations/mumbai.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80" alt="Himachal Pradesh">
+                        <div class="destination-info">
+                            <h3>Himachal Pradesh</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.9</span>
+                                <a href="destinations/himachal.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1627896157734-4d7d4388f28b?auto=format&fit=crop&w=800&q=80" alt="Ladakh">
+                        <div class="destination-info">
+                            <h3>Ladakh</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.9</span>
+                                <a href="destinations/ladakh.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1621335223658-0ebd89004d51?auto=format&fit=crop&w=800&q=80" alt="Gokarna">
+                        <div class="destination-info">
+                            <h3>Gokarna</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.6</span>
+                                <a href="destinations/gokarna.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80" alt="Jaipur">
+                        <div class="destination-info">
+                            <h3>Pink City, Jaipur</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.8</span>
+                                <a href="destinations/jaipur.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80" alt="Goa">
+                        <div class="destination-info">
+                            <h3>Beaches of Goa</h3>
+                            <div class="rating">
+                                <i data-lucide="navigation"></i>
+                                <span>Rating: 4.9</span>
+                                <a href="destinations/goa.html" class="btn-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

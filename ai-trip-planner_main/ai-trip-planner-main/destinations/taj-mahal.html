@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taj Mahal - AI Trip Planner</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://unpkg.com/lucide@0.344.0"></script>
+</head>
+<body>
+    <div class="min-h-screen bg-gradient">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i data-lucide="plane"></i>
+                        <span>AI TRIP PLANNER</span>
+                    </div>
+                    <nav class="nav">
+                        <a href="../index.html">Home</a>
+                        <a href="../index.html#destinations">Destinations</a>
+                        <a href="../index.html#plan-trip">Plan Trip</a>
+                        <a href="../index.html#about">About</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <section class="container main-content">
+            <div class="destination-detail-card">
+                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80" alt="Taj Mahal">
+                <div class="destination-content">
+                    <h1>Taj Mahal, Agra</h1>
+                    <div class="rating">
+                        <i data-lucide="star"></i>
+                        <span>4.9/5 - World Heritage Site</span>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <i data-lucide="map-pin"></i>
+                            <span>Location: Agra, Uttar Pradesh</span>
+                        </div>
+                        <div class="info-item">
+                            <i data-lucide="clock"></i>
+                            <span>Best Time: October to March</span>
+                        </div>
+                        <div class="info-item">
+                            <i data-lucide="ticket"></i>
+                            <span>Entry Fee: ₹1100 (Foreigners), ₹50 (Indians)</span>
+                        </div>
+                    </div>
+                    <div class="description">
+                        <h2>About Taj Mahal</h2>
+                        <p>The Taj Mahal is an ivory-white marble mausoleum on the right bank of the river Yamuna in Agra, India. It was commissioned in 1632 by the Mughal emperor Shah Jahan to house the tomb of his favorite wife, Mumtaz Mahal.</p>
+                        
+                        <h2>Things to Do</h2>
+                        <ul>
+                            <li>Watch the sunrise at the Taj Mahal</li>
+                            <li>Take a guided tour to learn about its history</li>
+                            <li>Visit the adjacent Agra Fort</li>
+                            <li>Explore the Mughal gardens</li>
+                        </ul>
+
+                        <h2>How to Reach</h2>
+                        <ul>
+                            <li>By Air: Agra Airport (25km)</li>
+                            <li>By Train: Agra Cantt Railway Station (6km)</li>
+                            <li>By Road: Well connected to Delhi and other major cities</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary" onclick="window.location.href='../index.html#plan-trip'">
+                        Plan Your Trip
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="../main.js"></script>
+</body>
+</html>
